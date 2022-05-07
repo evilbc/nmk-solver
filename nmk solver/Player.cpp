@@ -83,3 +83,11 @@ bool operator!=(const Player& left, const Player& right) {
 bool operator!=(const Player& left, const Player::Value& right) {
 	return left.value != right;
 }
+
+Player Player::read() {
+	Player res;
+	int v;
+	scanf("%d", &v);
+	res.value = getVal(v);
+	return res;
+}

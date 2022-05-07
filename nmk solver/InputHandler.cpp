@@ -11,9 +11,9 @@
 #define SOLVE_COMMAND "SOLVE_GAME_STATE"
 
 InputHandler::InputHandler() {
-	std::ios_base::sync_with_stdio(false);
-	std::cin.tie(NULL);
-	std::cout.tie(NULL);
+	//std::ios_base::sync_with_stdio(false);
+	//std::cin.tie(NULL);
+	//std::cout.tie(NULL);
 }
 
 void InputHandler::handle() {
@@ -22,11 +22,13 @@ void InputHandler::handle() {
 		int n;
 		int m;
 		int k;
-		Player player;
-		std::cin >> n;
-		std::cin >> m;
-		std::cin >> k;
-		std::cin >> player;
+		//Player player;
+		scanf("%d %d %d", &n, &m, &k);
+		Player player = Player::read();
+		//std::cin >> n;
+		//std::cin >> m;
+		//std::cin >> k;
+		//std::cin >> player;
 		Board board = Board(n, m);
 		std::cin >> board;
 		NmkEngine engine = NmkEngine(board, k, player);
@@ -37,7 +39,7 @@ void InputHandler::handle() {
 		} else if (strcmp(input, SOLVE_COMMAND) == 0) {
 			engine.solve();
 		} else {
-			std::cout << "Invalid command: " << input;
+			//std::cout << "Invalid command: " << input;
 		}
 	}
 }

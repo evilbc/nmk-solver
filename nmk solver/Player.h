@@ -23,9 +23,11 @@ public:
 	friend bool operator==(const Player& left, const Player& right);
 	friend bool operator!=(const Player& left, const Player& right);
 	friend bool operator!=(const Player& left, const Player::Value& right);
+
+	int valueAsInt() const;
+	static Player read();
 private:
 	Value value;
 	static Value getVal(int val);
-	int valueAsInt() const;
 };
 

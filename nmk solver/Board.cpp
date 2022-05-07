@@ -95,3 +95,25 @@ std::istream& operator>> (std::istream& is, Board& board) {
 	}
 	return is;
 }
+
+void Board::read() {
+	numOfEmptyFields = 0;
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++) {
+			board[i][j] = Player::read();
+			//is >> board.board[i][j];
+			if (board[i][j] == Player::NONE) {
+				numOfEmptyFields++;
+			}
+		}
+	}
+}
+
+void Board::write() {
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++) {
+			printf("%d ", board[i][j].valueAsInt());
+		}
+		printf("\n");
+	}
+}

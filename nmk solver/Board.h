@@ -20,7 +20,10 @@ public:
 
 	friend std::ostream& operator<< (std::ostream& os, const Board& board);
 	friend std::istream& operator>> (std::istream& is, Board& board);
-	friend std::istream;
+	//friend std::istream;
+
+	void read();
+	void write();
 private:
 	Player** board;
 	int width;

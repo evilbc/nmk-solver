@@ -56,17 +56,22 @@ void NmkEngine::printSolutions(LinkedBoardList& solutions, bool shouldCut) {
 	if (shouldCut) {
 		for (LinkedBoardList::Iterator it = solutions.start(); it.hasNext(); it.next()) {
 			if (isWinning(it.get(), player)) {
-				std::cout << "1\n" << it.get();
+				//std::cout << "1\n" << it.get();
+				printf("1\n");
+				it.get().write();
 				return;
 			}
 		}
 	}
-	std::cout << solutions.getSize() << "\n";
+	//std::cout << solutions.getSize() << "\n";
+	printf("%d\n", solutions.getSize());
 	//if (solutions.isEmpty()) {
 	//	return;
 	//}
 	for (LinkedBoardList::Iterator it = solutions.start(); it.hasNext(); it.next()) {
-		std::cout << it.get() << "\n";
+		//std::cout << it.get() << "\n";
+		it.get().write();
+		printf("\n");
 	}
 }
 
@@ -166,7 +171,8 @@ int NmkEngine::minimax(Board& currBoard, Player currPlayer) {
 void NmkEngine::solve() {
 	int res = minimax(board, player);
 	if (res == TIE) {
-		std::cout << MESSAGE_TIE;
+		//std::cout << MESSAGE_TIE;
+		printf(MESSAGE_TIE);
 		return;
 	}
 	Player winner;

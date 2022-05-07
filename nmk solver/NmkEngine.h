@@ -31,7 +31,7 @@ private:
 	bool isWinning(const Board& currBoard, int x, int y);
 	bool isWinning(const Board& currBoard, int startX, int startY, int dx, int dy);
 	int howManyInDirection(const Board& currBoard, int startX, int startY, int dx, int dy);
-	int minimax(Board& currBoard, Player player);
+	int minimax(Board& currBoard, Player currPlayer);
 	int evaluate(Board& currBoard);
 	LinkedBoardList* generatePossibleMoves(const Board& currBoard, const Player& currPlayer, int lastX = UNKNOWN_MOVE, int lastY = UNKNOWN_MOVE);
 	bool isOver(const Board& currBoard, const Player& currPlayer, int lastX = UNKNOWN_MOVE, int lastY = UNKNOWN_MOVE);
