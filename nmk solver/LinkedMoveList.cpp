@@ -1,10 +1,10 @@
-#include "LinkedBoardList.h"
+#include "LinkedMoveList.h"
 #include <assert.h>
 
-LinkedBoardList::LinkedBoardList() : head(nullptr), tail(nullptr), size(0) {
+LinkedMoveList::LinkedMoveList() : head(nullptr), tail(nullptr), size(0) {
 }
 
-LinkedBoardList::~LinkedBoardList() {
+LinkedMoveList::~LinkedMoveList() {
 	Node* current = head;
 	while (current != nullptr) {
 		Node* prev = current;
@@ -13,13 +13,13 @@ LinkedBoardList::~LinkedBoardList() {
 	}
 }
 
-size_t LinkedBoardList::getSize() const {
+size_t LinkedMoveList::getSize() const {
 	return size;
 }
 
-void LinkedBoardList::push(Board* player) {
+void LinkedMoveList::push(Move* move) {
 	Node* last = tail;
-	tail = new Node(player);
+	tail = new Node(move);
 	if (head == nullptr) {
 		head = tail;
 	} else {
@@ -29,15 +29,16 @@ void LinkedBoardList::push(Board* player) {
 	size++;
 }
 
-bool LinkedBoardList::isEmpty() const {
-	return size <= 0;
+bool LinkedMoveList::isEmpty() const {
+	return size == 0;
 }
 
-LinkedBoardList::Iterator LinkedBoardList::start() {
+LinkedMoveList::Iterator LinkedMoveList::start() {
 	return Iterator(head, *this);
 }
 
-void LinkedBoardList::remove(Iterator& it) {
+void LinkedMoveList::remove(Iterator& it) {
+	assert(!isEmpty());
 	Node* prev = it.current->previous;
 	Node* next = it.current->next;
 	if (prev != nullptr) {
@@ -62,30 +63,30 @@ void LinkedBoardList::remove(Iterator& it) {
 	size--;
 }
 
-LinkedBoardList::Node::Node(Board* board) : next(nullptr), previous(nullptr), board(board) {
+LinkedMoveList::Node::Node(Move* move) : next(nullptr), previous(nullptr), move(move) {
 }
 
-LinkedBoardList::Node::~Node() {
-	delete board;
+LinkedMoveList::Node::~Node() {
+	delete move;
 }
 
-LinkedBoardList::Iterator::Iterator(Node* current, LinkedBoardList& list) : current(current), list(list), removed(false) {
+LinkedMoveList::Iterator::Iterator(Node* current, LinkedMoveList& list) : current(current), list(list), removed(false) {
 }
 
-Board& LinkedBoardList::Iterator::get() {
-	return *(current->board);
+Move& LinkedMoveList::Iterator::get() {
+	return *(current->move);
 }
 
-void LinkedBoardList::Iterator::next() {
+void LinkedMoveList::Iterator::next() {
 	current = removed ? current : current->next;
 	removed = false;
 }
 
-bool LinkedBoardList::Iterator::hasNext() const {
+bool LinkedMoveList::Iterator::hasNext() const {
 	return current != nullptr;
 }
 
-void LinkedBoardList::Iterator::remove() {
+void LinkedMoveList::Iterator::remove() {
 	list.remove(*this);
 	removed = true;
 }

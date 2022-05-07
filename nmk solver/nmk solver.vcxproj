@@ -141,7 +141,7 @@
   <ItemGroup>
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="InputHandler.cpp" />
-    <ClCompile Include="LinkedBoardList.cpp" />
+    <ClCompile Include="LinkedMoveList.cpp" />
     <ClCompile Include="nmk_solver.cpp" />
     <ClCompile Include="NmkEngine.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -149,7 +149,7 @@
   <ItemGroup>
     <ClInclude Include="Board.h" />
     <ClInclude Include="InputHandler.h" />
-    <ClInclude Include="LinkedBoardList.h" />
+    <ClInclude Include="LinkedMoveList.h" />
     <ClInclude Include="NmkEngine.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>

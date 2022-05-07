@@ -1,5 +1,6 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "InputHandler.h"
-#include <iostream>
 #include "Board.h"
 #include "NmkEngine.h"
 #include <assert.h>
@@ -10,27 +11,21 @@
 #define GENERATE_CUT_COMMAND "GEN_ALL_POS_MOV_CUT_IF_GAME_OVER"
 #define SOLVE_COMMAND "SOLVE_GAME_STATE"
 
-InputHandler::InputHandler() {
-	//std::ios_base::sync_with_stdio(false);
-	//std::cin.tie(NULL);
-	//std::cout.tie(NULL);
-}
-
 void InputHandler::handle() {
 	char input[MAX_INPUT_LENGTH];
-	while (std::cin >> input) {
-		int n;
-		int m;
+	while (true) {
+		scanf("%s", input);
+		if (feof(stdin) != 0) {
+			break;
+		}
+		int height;
+		int width;
 		int k;
-		//Player player;
-		scanf("%d %d %d", &n, &m, &k);
-		Player player = Player::read();
-		//std::cin >> n;
-		//std::cin >> m;
-		//std::cin >> k;
-		//std::cin >> player;
-		Board board = Board(n, m);
-		std::cin >> board;
+		int p;
+		scanf("%d %d %d %d", &height, &width, &k, &p);
+		Player player = Player(p);
+		Board board = Board(width, height);
+		board.read();
 		NmkEngine engine = NmkEngine(board, k, player);
 		if (strcmp(input, GENERATE_COMMAND) == 0) {
 			engine.generate(false);
@@ -39,7 +34,7 @@ void InputHandler::handle() {
 		} else if (strcmp(input, SOLVE_COMMAND) == 0) {
 			engine.solve();
 		} else {
-			//std::cout << "Invalid command: " << input;
+			printf("Invalid command: %s\n", input);
 		}
 	}
 }

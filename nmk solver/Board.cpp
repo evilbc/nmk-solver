@@ -1,56 +1,50 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "Board.h"
 #include <assert.h>
 
 Board::Board(int width, int height) : width(width), height(height), numOfEmptyFields(height* width) {
-	board = new Player * [width];
-	for (int i = 0; i < width; i++) {
-		board[i] = new Player[height];
-		//for (int j = 0; j < height; j++) {
-		//	board[i][j] = Player::NONE;
-		//}
+	board = new Player * [height];
+	for (int i = 0; i < height; i++) {
+		board[i] = new Player[width];
 	}
 }
 
 Board::Board(const Board& other) : width(other.width), height(other.height), numOfEmptyFields(other.numOfEmptyFields) {
-	board = new Player * [width];
-	for (int i = 0; i < width; i++) {
-		board[i] = new Player[height];
-		for (int j = 0; j < height; j++) {
+	board = new Player * [height];
+	for (int i = 0; i < height; i++) {
+		board[i] = new Player[width];
+		for (int j = 0; j < width; j++) {
 			board[i][j] = other.board[i][j];
 		}
 	}
 }
 
 Board::~Board() {
-	for (int i = 0; i < width; i++) {
+	for (int i = 0; i < height; i++) {
 		delete[] board[i];
 	}
 	delete[] board;
 }
 
 bool Board::withinBounds(int x, int y) const {
-	return x >= 0 && x < width&& y >= 0 && y < height;
+	return x >= 0 && x < width && y >= 0 && y < height;
 }
-
-//Player& Board::player(int x, int y) {
-//	assert(withinBounds(x, y));
-//	return board[x][y];
-//}
 
 const Player& Board::getPlayer(int x, int y) const {
 	assert(withinBounds(x, y));
-	return board[x][y];
+	return board[y][x];
 }
 
 void Board::setPlayer(int x, int y, Player player) {
 	assert(withinBounds(x, y));
-	Player& p = board[x][y];
+	Player& p = board[y][x];
 	if (p == Player::NONE && player != Player::NONE) {
-		numOfEmptyFields++;
-	} else if (p != Player::NONE && player == Player::NONE) {
 		numOfEmptyFields--;
+	} else if (p != Player::NONE && player == Player::NONE) {
+		numOfEmptyFields++;
 	}
-	board[x][y] = player;
+	board[y][x] = player;
 }
 
 int Board::getWidth() const {
@@ -62,46 +56,16 @@ int Board::getHeight() const {
 }
 
 bool Board::isFull() const {
-	//for (int i = 0; i < width; i++) {
-	//	for (int j = 0; j < height; j++) {
-	//		if (board[i][j] == Player::NONE) {
-	//			return false;
-	//		}
-	//	}
-	//}
-	//return true;
 	return numOfEmptyFields <= 0;
-}
-
-std::ostream& operator<< (std::ostream& os, const Board& board) {
-	for (int i = 0; i < board.width; i++) {
-		for (int j = 0; j < board.height; j++) {
-			os << board.board[i][j] << " ";
-		}
-		os << "\n";
-	}
-	return os;
-}
-
-std::istream& operator>> (std::istream& is, Board& board) {
-	board.numOfEmptyFields = 0;
-	for (int i = 0; i < board.width; i++) {
-		for (int j = 0; j < board.height; j++) {
-			is >> board.board[i][j];
-			if (board.board[i][j] == Player::NONE) {
-				board.numOfEmptyFields++;
-			}
-		}
-	}
-	return is;
 }
 
 void Board::read() {
 	numOfEmptyFields = 0;
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < height; j++) {
-			board[i][j] = Player::read();
-			//is >> board.board[i][j];
+	int input;
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			scanf("%d", &input);
+			board[i][j] = Player(input);
 			if (board[i][j] == Player::NONE) {
 				numOfEmptyFields++;
 			}
@@ -110,8 +74,8 @@ void Board::read() {
 }
 
 void Board::write() {
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < height; j++) {
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
 			printf("%d ", board[i][j].valueAsInt());
 		}
 		printf("\n");

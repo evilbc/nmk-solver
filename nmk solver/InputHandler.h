@@ -2,7 +2,6 @@
 
 class InputHandler {
 public:
-	InputHandler();
 	void handle();
 };
 

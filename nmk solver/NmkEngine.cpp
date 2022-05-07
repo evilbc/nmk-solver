@@ -4,17 +4,17 @@
 NmkEngine::NmkEngine(Board& board, int k, Player player) : board(board), minToWin(k), player(player) {
 }
 
-LinkedBoardList* NmkEngine::generatePossibleMoves(const Board& currBoard, const Player& currPlayer, int lastX, int lastY) {
-	LinkedBoardList* solutions = new LinkedBoardList();
-	if (isOver(currBoard, currPlayer, lastX, lastY)) {
-		return solutions;
-	}
-	for (int i = 0; i < board.getWidth(); i++) {
-		for (int j = 0; j < board.getHeight(); j++) {
-			if (board.getPlayer(i, j) == Player::NONE) {
-				Board* solution = new Board(board);
-				solution->setPlayer(i, j, currPlayer);
-				solutions->push(solution);
+LinkedMoveList* NmkEngine::generatePossibleMoves(const Board& currBoard, const Player& currPlayer) {
+	LinkedMoveList* solutions = new LinkedMoveList();
+	//if (isOver(currBoard, currPlayer, lastX, lastY)) {
+	//	return solutions;
+	//}
+	for (int y = 0; y < currBoard.getHeight(); y++) {
+		for (int x = 0; x < currBoard.getWidth(); x++) {
+			if (currBoard.getPlayer(x, y) == Player::NONE) {
+				Board* solution = new Board(currBoard);
+				solution->setPlayer(x, y, currPlayer);
+				solutions->push(new Move(solution, x, y));
 			}
 		}
 	}
@@ -33,64 +33,39 @@ bool NmkEngine::isOver(const Board& currBoard, const Player& currPlayer, int las
 }
 
 void NmkEngine::generate(bool shouldCut) {
-	//LinkedBoardList solutions;
-	//if (isWinning(board, player.getOpponent())) {
-	//	printSolutions(solutions, shouldCut);
-	//	return;
-	//}
-	//for (int i = 0; i < board.getWidth(); i++) {
-	//	for (int j = 0; j < board.getHeight(); j++) {
-	//		if (board.player(i, j) == Player::NONE) {
-	//			Board* solution = new Board(board);
-	//			solution->player(i, j) = player;
-	//			solutions.push(solution);
-	//		}
-	//	}
-	//}
-	LinkedBoardList* solutions = generatePossibleMoves(board, player);
+	if (isOver(board, player)) {
+		printf("0\n");
+		return;
+	}
+	LinkedMoveList* solutions = generatePossibleMoves(board, player);
 	printSolutions(*solutions, shouldCut);
 	delete solutions;
 }
 
-void NmkEngine::printSolutions(LinkedBoardList& solutions, bool shouldCut) {
+void NmkEngine::printSolutions(LinkedMoveList& solutions, bool shouldCut) {
 	if (shouldCut) {
-		for (LinkedBoardList::Iterator it = solutions.start(); it.hasNext(); it.next()) {
-			if (isWinning(it.get(), player)) {
-				//std::cout << "1\n" << it.get();
+		for (LinkedMoveList::Iterator it = solutions.start(); it.hasNext(); it.next()) {
+			if (isWinning(*(it.get().board), player)) {
 				printf("1\n");
-				it.get().write();
+				it.get().board->write();
 				return;
 			}
 		}
 	}
-	//std::cout << solutions.getSize() << "\n";
-	printf("%d\n", solutions.getSize());
-	//if (solutions.isEmpty()) {
-	//	return;
-	//}
-	for (LinkedBoardList::Iterator it = solutions.start(); it.hasNext(); it.next()) {
-		//std::cout << it.get() << "\n";
-		it.get().write();
+	printf("%u\n", solutions.getSize());
+	for (LinkedMoveList::Iterator it = solutions.start(); it.hasNext(); it.next()) {
+		it.get().board->write();
 		printf("\n");
 	}
 }
 
-//bool NmkEngine::isWinning(LinkedBoardList& boardList, int currPlayer) {
-//	for (LinkedBoardList::Iterator it = boardList.start(); it.hasNext(); it.next()) {
-//		if (isWinning(it.get(), currPlayer)) {
-//			return true;
-//		}
-//	}
-//	return false;
-//}
-
 bool NmkEngine::isWinning(const Board& currBoard, const Player& currPlayer) {
-	for (int i = 0; i < currBoard.getWidth(); i++) {
-		for (int j = 0; j < currBoard.getHeight(); j++) {
-			if (currPlayer != currBoard.getPlayer(i, j)) {
+	for (int y = 0; y < currBoard.getHeight(); y++) {
+		for (int x = 0; x < currBoard.getWidth(); x++) {
+			if (currPlayer != currBoard.getPlayer(x, y)) {
 				continue;
 			}
-			if (isWinning(currBoard, i, j)) {
+			if (isWinning(currBoard, x, y)) {
 				return true;
 			}
 		}
@@ -126,30 +101,44 @@ int NmkEngine::howManyInDirection(const Board& currBoard, int startX, int startY
 	return counter;
 }
 
-int NmkEngine::evaluate(Board& currBoard) {
-	if (isWinning(currBoard, player)) {
+int NmkEngine::evaluate(Move& currMove) {
+	Board& currBoard = *(currMove.board);
+	if (currMove.moveIsKnown()) {
+		//if (isWinning(currBoard, currMove.lastMoveX, currMove.lastMoveY) || hasWinningThreat(currMove)) {
+		//	return currBoard.getPlayer(currMove.lastMoveX, currMove.lastMoveY) == Player::FIRST ? WIN : LOSS;
+		//} else {
+		//	return TIE;
+		//}
+		//if (isWinning(currBoard, currMove.lastMoveX, currMove.lastMoveY)) {
+		//	return currBoard.getPlayer(currMove.lastMoveX, currMove.lastMoveY) == Player::FIRST ? WIN : LOSS;
+		//} else {
+		//	return TIE;
+		//}
+		if (hasWinningThreat(currMove)) {
+			return currBoard.getPlayer(currMove.lastMoveX, currMove.lastMoveY) == Player::FIRST ? WIN : LOSS;
+		} else {
+			return TIE;
+		}
+	}
+	if (isWinning(currBoard, Player::FIRST)) {
 		return WIN;
-	} else if (isWinning(currBoard, player.getOpponent())) {
+	} else if (isWinning(currBoard, Player::SECOND)) {
 		return LOSS;
 	}
 	return TIE;
 }
 
-//int NmkEngine::findBestMove(Board& currBoard) {
-//	int bestMove = INT_MIN;
-//	
-//}
-
-int NmkEngine::minimax(Board& currBoard, Player currPlayer) {
-	int score = evaluate(currBoard);
+int NmkEngine::minimax(Move& currMove, Player currPlayer) {
+	Board& currBoard = *(currMove.board);
+	int score = evaluate(currMove);
 	if (score == WIN || score == LOSS || currBoard.isFull()) {
 		return score;
 	}
 	int best;
-	LinkedBoardList* possibleMoves = generatePossibleMoves(currBoard, currPlayer);
-	if (currPlayer == player) {
+	LinkedMoveList* possibleMoves = generatePossibleMoves(currBoard, currPlayer);
+	if (currPlayer == Player::FIRST) {
 		best = LOSS;
-		for (LinkedBoardList::Iterator it = possibleMoves->start(); it.hasNext(); it.next()) {
+		for (LinkedMoveList::Iterator it = possibleMoves->start(); it.hasNext(); it.next()) {
 			best = std::max(best, minimax(it.get(), currPlayer.getOpponent()));
 			if (best == WIN) {
 				break;
@@ -157,7 +146,7 @@ int NmkEngine::minimax(Board& currBoard, Player currPlayer) {
 		}
 	} else {
 		best = WIN;
-		for (LinkedBoardList::Iterator it = possibleMoves->start(); it.hasNext(); it.next()) {
+		for (LinkedMoveList::Iterator it = possibleMoves->start(); it.hasNext(); it.next()) {
 			best = std::min(best, minimax(it.get(), currPlayer.getOpponent()));
 			if (best == LOSS) {
 				break;
@@ -169,36 +158,60 @@ int NmkEngine::minimax(Board& currBoard, Player currPlayer) {
 }
 
 void NmkEngine::solve() {
-	int res = minimax(board, player);
+	Move move = Move(new Board(board));
+	int res = minimax(move, player);
 	if (res == TIE) {
-		//std::cout << MESSAGE_TIE;
 		printf(MESSAGE_TIE);
 		return;
 	}
-	Player winner;
-	if (res == WIN) {
-		winner = player;
-	} else {
-		winner = player.getOpponent();
-	}
-	if (winner == Player::FIRST) {
-		std::cout << MESSAGE_P1;
-	} else {
-		std::cout << MESSAGE_P2;
-	}
+	printf(res == WIN ? MESSAGE_P1 : MESSAGE_P2);
 }
 
-//int Minmax(G gameState, Player activePlayer)
-//int score = gameState.Evaluate(activePlayer)
-//if (gameState.State == GameOver) {
-//	return score
-//}
-//allPossibleMoves = gameState.GeneratePossibleMoves(activePlayer)
-//if (activePlayer == Player::first)
-//forall(possibleMove in allPossibleMoves)
-//best = maximum(best, Minmax(possibleMove, activePlayer.GetOponent()))
-//return best
-//else
-//forall(possibleMove in allPossibleMoves) {
-//	best = minimum(best, Minmax(possibleMove, activePlayer.GetOponent()))
-//		return best
+bool NmkEngine::hasWinningThreat(Move& currMove) {
+	//if (!currMove.moveIsKnown()) {
+	//	return false;
+	//}
+	Board& currBoard = *(currMove.board);
+	int x = currMove.lastMoveX;
+	int y = currMove.lastMoveY;
+	return isOpenEndedThreat(currBoard, x, y, 1, 0)
+		|| isOpenEndedThreat(currBoard, x, y, 0, 1)
+		|| isOpenEndedThreat(currBoard, x, y, 1, 1)
+		|| isOpenEndedThreat(currBoard, x, y, 1, -1);
+}
+
+bool NmkEngine::isOpenEndedThreat(const Board& currBoard, int x, int y, int dx, int dy) {
+	int howManyNormal = howManyInDirection(currBoard, x, y, dx, dy);
+	int howManyReversed = howManyInDirection(currBoard, x, y, -dx, -dy);
+	//return howManyNormal + howManyReversed == minToWin - 1
+	//	&& currBoard.withinBounds(x + dx * (1 + howManyNormal), y + dy * (1 + howManyNormal))
+	//	&& currBoard.withinBounds(x - dx * (1 + howManyReversed), y - dy * (1 + howManyReversed));
+	if (howManyNormal + howManyReversed >= minToWin - 1) {
+		return true;
+	} else if (howManyNormal + howManyReversed == minToWin - 2) {
+		int xNormal = x + (dx * ++howManyNormal);
+		int yNormal = y + (dy * howManyNormal);
+		int xRev = x - (dx * ++howManyReversed);
+		int yRev = y - (dy * howManyReversed);
+		return
+			currBoard.withinBounds(xNormal, yNormal) && currBoard.getPlayer(xNormal, yNormal) == Player::NONE
+			&& currBoard.withinBounds(xRev, yRev) && currBoard.getPlayer(xRev, yRev) == Player::NONE;
+	}
+	return false;
+	//bool test = howManyNormal + howManyReversed == minToWin - 2
+	//	&& currBoard.withinBounds(x + dx * (1 + howManyNormal), y + dy * (1 + howManyNormal))
+	//	&& currBoard.withinBounds(x - dx * (1 + howManyReversed), y - dy * (1 + howManyReversed));
+	//if (test) {
+	//	int a = 0;
+	//}
+	//return test;
+
+
+	//int xNormal = x + (dx * ++howManyNormal);
+	//int yNormal = y + (dy * howManyNormal);
+	//int xRev = x - (dx * ++howManyReversed);
+	//int yRev = y - (dy * howManyReversed);
+	//return howManyNormal + howManyReversed == minToWin - 2
+	//	&& currBoard.withinBounds(xNormal, yNormal) && currBoard.getPlayer(xNormal, yNormal) == Player::NONE
+	//	&& currBoard.withinBounds(xRev, yRev) && currBoard.getPlayer(xRev, yRev) == Player::NONE;
+}
