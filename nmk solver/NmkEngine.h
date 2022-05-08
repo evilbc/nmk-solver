@@ -19,6 +19,7 @@ class Player;
 struct Move;
 
 
+#include <iostream> // TODO
 
 class NmkEngine {
 public:

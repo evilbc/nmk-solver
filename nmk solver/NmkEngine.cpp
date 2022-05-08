@@ -119,9 +119,11 @@ int NmkEngine::evaluate(Move& currMove, Player currPlayer, LinkedMoveList& threa
 		} else {
 			addThreats(currMove, threats);
 			if (threats.sizeByPlayer(Player::FIRST) >= 2) {
+				//std::cout << "\n1: \n" << board.asString() << "\n";
 				return P1_WIN;
 			}
 			if (threats.sizeByPlayer(Player::SECOND) >= 2) {
+				//std::cout << "\n2: \n" << board.asString() << "\n";
 				return P1_LOSS;
 			}
 		}
@@ -130,6 +132,12 @@ int NmkEngine::evaluate(Move& currMove, Player currPlayer, LinkedMoveList& threa
 			result = P1_WIN;
 		} else if (isWinning(Player::SECOND)) {
 			result = P1_LOSS;
+		} else if (threats.sizeByPlayer(Player::FIRST) >= 2) {
+			//std::cout << "\n1: \n" << board.asString() << "\n";
+			return P1_WIN;
+		} else if (threats.sizeByPlayer(Player::SECOND) >= 2) {
+			//std::cout << "\n2: \n" << board.asString() << "\n";
+			return P1_LOSS;
 		}
 	}
 	return result;
@@ -145,6 +153,9 @@ int NmkEngine::minimax(Move& currMove, Player currPlayer, LinkedMoveList& threat
 				break;
 			}
 		}
+	}
+	if (threats.sizeByPlayer(currPlayer) >= 1) {
+		return currPlayer == Player::FIRST ? P1_WIN : P1_LOSS;
 	}
 	int score = evaluate(currMove, currPlayer, threats);
 	if (score == P1_WIN || score == P1_LOSS || board.isFull()) {
@@ -186,8 +197,6 @@ void NmkEngine::addThreats(Move& currMove, LinkedMoveList& threats) {
 	addThreats(currMove, threats, 1, -1);
 }
 
-
-#include <iostream>
 void NmkEngine::addThreats(Move& currMove, LinkedMoveList& threats, int dx, int dy) {
 	int startX = currMove.x;
 	int startY = currMove.y;
@@ -197,7 +206,10 @@ void NmkEngine::addThreats(Move& currMove, LinkedMoveList& threats, int dx, int 
 	Player currPlayer = currMove.player;
 	Player opponent = currPlayer.getOpponent();
 	int counter = 0;
+	int skipCounter = 0;
 	bool skippedOne = false;
+	bool sL = false;
+	bool sR = false;
 	int x = startX + dx;
 	int y = startY + dy;
 	int lX = -1;
@@ -211,12 +223,20 @@ void NmkEngine::addThreats(Move& currMove, LinkedMoveList& threats, int dx, int 
 		}
 		if (pl == Player::NONE) {
 			if (!skippedOne && board.withinBounds(x + dx, y + dy) && board.getPlayer(x + dx, y + dy) == currPlayer) {
+				sL = true;
 				skippedOne = true;
 				skip = new Move(currPlayer, x, y);
 				x += dx;
 				y += dy;
-				continue;
+				while (board.withinBounds(x, y) && board.getPlayer(x, y) == currPlayer) {
+					skipCounter++;
+					x += dx;
+					y += dy;
+				}
+				break;
 			} else {
+				lX = x;
+				lY = y;
 				break;
 			}
 		}
@@ -237,12 +257,20 @@ void NmkEngine::addThreats(Move& currMove, LinkedMoveList& threats, int dx, int 
 		}
 		if (pl == Player::NONE) {
 			if (!skippedOne && board.withinBounds(x + dx, y + dy) && board.getPlayer(x + dx, y + dy) == currPlayer) {
+				sR = true;
 				skippedOne = true;
 				skip = new Move(currPlayer, x, y);
 				x += dx;
 				y += dy;
-				continue;
+				while (board.withinBounds(x, y) && board.getPlayer(x, y) == currPlayer) {
+					skipCounter++;
+					x += dx;
+					y += dy;
+				}
+				break;
 			} else {
+				rX = x;
+				rY = y;
 				break;
 			}
 		}
@@ -252,11 +280,10 @@ void NmkEngine::addThreats(Move& currMove, LinkedMoveList& threats, int dx, int 
 		rX = x;
 		rY = y;
 	}
+	if (skip != nullptr && counter + skipCounter + 2 >= minToWin && !threats.contains(skip->player, skip->x, skip->y)) {
+		threats.push(skip);
+	}
 	if (counter + 2 >= minToWin) {
-		if (skip != nullptr && !threats.contains(skip->player, skip->x, skip->y)) {
-			//std::cout << board.asString() << '\n';
-			threats.push(skip);
-		}
 		if (board.withinBounds(lX, lY) && board.getPlayer(lX, lY) == Player::NONE && !threats.contains(currPlayer, lX, lY)) {
 			//std::cout << board.asString() << '\n';
 			threats.push(new Move(currPlayer, lX, lY));
@@ -279,8 +306,23 @@ void NmkEngine::addThreats(Move& currMove, LinkedMoveList& threats, int dx, int 
 }
 
 void NmkEngine::solve() {
+	if (isWinning(Player::FIRST)) {
+		printf(MESSAGE_P1);
+		return;
+	} else if (isWinning(Player::SECOND)) {
+		printf(MESSAGE_P2);
+		return;
+	}
 	Move move = Move(player.getOpponent(), UNKNOWN_MOVE, UNKNOWN_MOVE);
 	LinkedMoveList threats;
+	for (int y = 0; y < board.getHeight(); y++) {
+		for (int x = 0; x < board.getWidth(); x++) {
+			if (board.getPlayer(x, y) != Player::NONE) {
+				Move test(board.getPlayer(x, y), x, y);
+				addThreats(test, threats);
+			}
+		}
+	}
 	int res = minimax(move, player, threats);
 	if (res == TIE) {
 		printf(MESSAGE_TIE);

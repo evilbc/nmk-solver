@@ -11,6 +11,7 @@
 #define GENERATE_COMMAND "GEN_ALL_POS_MOV"
 #define GENERATE_CUT_COMMAND "GEN_ALL_POS_MOV_CUT_IF_GAME_OVER"
 #define SOLVE_COMMAND "SOLVE_GAME_STATE"
+int n = 0;
 
 void InputHandler::handle() {
 	char input[MAX_INPUT_LENGTH];
@@ -19,6 +20,7 @@ void InputHandler::handle() {
 		if (feof(stdin) != 0) {
 			break;
 		}
+		n++;
 		int height;
 		int width;
 		int k;
