@@ -2,6 +2,7 @@
 
 #include "Board.h"
 #include <assert.h>
+#include <iostream>
 
 Board::Board(int width, int height) : width(width), height(height), numOfEmptyFields(height* width) {
 	board = new Player * [height];
@@ -80,4 +81,15 @@ void Board::write() {
 		}
 		printf("\n");
 	}
+}
+
+std::string Board::asString() const {
+	std::string result = "";
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			result = result + std::to_string(board[i][j].valueAsInt()) + " ";
+		}
+		result = result + "\n";
+	}
+	return result;
 }

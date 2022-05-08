@@ -1,7 +1,8 @@
 #pragma once
 
-#include <iostream>
 #include "Player.h"
+
+#include <string>
 
 class Player;
 
@@ -19,6 +20,8 @@ public:
 
 	void read();
 	void write();
+
+	std::string asString() const;
 private:
 	Player** board;
 	int width;

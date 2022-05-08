@@ -4,6 +4,20 @@
 LinkedMoveList::LinkedMoveList() : head(nullptr), tail(nullptr), size(0) {
 }
 
+LinkedMoveList::LinkedMoveList(const LinkedMoveList& other) : head(nullptr), tail(nullptr), size(0) {
+	if (other.size == 0) {
+		return;
+	}
+	Node* current = other.head;
+	while (current != nullptr) {
+		push(new Move(current->move->player, current->move->x, current->move->y));
+		current = current->next;
+	}
+	//for (LinkedMoveList::Iterator it = other.start(); it.hasNext(); it.next()) {
+	//	push(new Move(it.get().player, it.get().x, it.get().y));
+	//}
+}
+
 LinkedMoveList::~LinkedMoveList() {
 	Node* current = head;
 	while (current != nullptr) {
@@ -89,4 +103,33 @@ bool LinkedMoveList::Iterator::hasNext() const {
 void LinkedMoveList::Iterator::remove() {
 	list.remove(*this);
 	removed = true;
+}
+
+bool LinkedMoveList::contains(Player& player, int x, int y) {
+	if (size == 0) {
+		return false;
+	}
+	Node* current = head;
+	while (current != nullptr) {
+		if (current->move->player == player && current->move->x == x && current->move->y == y) {
+			return true;
+		}
+		current = current->next;
+	}
+	return false;
+}
+
+size_t LinkedMoveList::sizeByPlayer(Player player) {
+	if (size == 0) {
+		return 0;
+	}
+	size_t result = 0;
+	Node* current = head;
+	while (current != nullptr) {
+		if (current->move->player == player) {
+			result++;
+		}
+		current = current->next;
+	}
+	return result;
 }

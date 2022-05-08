@@ -2,9 +2,12 @@
 
 #include "Board.h"
 #include "NmkEngine.h"
+#include <cstddef>
+#include "Player.h"
 
 class Board;
 struct Move;
+class Player;
 
 class LinkedMoveList {
 	struct Node {
@@ -30,11 +33,14 @@ public:
 		bool removed;
 	};
 	LinkedMoveList();
+	LinkedMoveList(const LinkedMoveList& other);
 	~LinkedMoveList();
 	std::size_t getSize() const;
 	void push(Move* move);
 	bool isEmpty() const;
 	Iterator start();
+	bool contains(Player& player, int x, int y);
+	size_t sizeByPlayer(Player player);
 private:
 	Node* head;
 	Node* tail;

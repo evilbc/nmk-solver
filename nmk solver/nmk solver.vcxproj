@@ -152,6 +152,7 @@
     <ClInclude Include="LinkedMoveList.h" />
     <ClInclude Include="NmkEngine.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

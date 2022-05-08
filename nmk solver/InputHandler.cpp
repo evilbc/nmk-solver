@@ -5,6 +5,7 @@
 #include "NmkEngine.h"
 #include <assert.h>
 #include "Player.h"
+#include <iostream>
 
 #define MAX_INPUT_LENGTH 50
 #define GENERATE_COMMAND "GEN_ALL_POS_MOV"
