@@ -13,9 +13,6 @@ LinkedMoveList::LinkedMoveList(const LinkedMoveList& other) : head(nullptr), tai
 		push(new Move(current->move->player, current->move->x, current->move->y));
 		current = current->next;
 	}
-	//for (LinkedMoveList::Iterator it = other.start(); it.hasNext(); it.next()) {
-	//	push(new Move(it.get().player, it.get().x, it.get().y));
-	//}
 }
 
 LinkedMoveList::~LinkedMoveList() {
@@ -105,7 +102,7 @@ void LinkedMoveList::Iterator::remove() {
 	removed = true;
 }
 
-bool LinkedMoveList::contains(Player& player, int x, int y) {
+bool LinkedMoveList::contains(Player player, int x, int y) const {
 	if (size == 0) {
 		return false;
 	}
@@ -119,7 +116,7 @@ bool LinkedMoveList::contains(Player& player, int x, int y) {
 	return false;
 }
 
-size_t LinkedMoveList::sizeByPlayer(Player player) {
+size_t LinkedMoveList::sizeByPlayer(Player player) const {
 	if (size == 0) {
 		return 0;
 	}

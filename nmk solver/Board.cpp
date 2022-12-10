@@ -74,22 +74,11 @@ void Board::read() {
 	}
 }
 
-void Board::write() {
+void Board::write() const {
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
 			printf("%d ", board[i][j].valueAsInt());
 		}
 		printf("\n");
 	}
-}
-
-std::string Board::asString() const {
-	std::string result = "";
-	for (int i = 0; i < height; i++) {
-		for (int j = 0; j < width; j++) {
-			result = result + std::to_string(board[i][j].valueAsInt()) + " ";
-		}
-		result = result + "\n";
-	}
-	return result;
 }

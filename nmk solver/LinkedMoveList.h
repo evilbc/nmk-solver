@@ -39,8 +39,8 @@ public:
 	void push(Move* move);
 	bool isEmpty() const;
 	Iterator start();
-	bool contains(Player& player, int x, int y);
-	size_t sizeByPlayer(Player player);
+	bool contains(Player player, int x, int y) const;
+	size_t sizeByPlayer(Player player) const;
 private:
 	Node* head;
 	Node* tail;

@@ -2,8 +2,6 @@
 
 #include "Player.h"
 
-#include <string>
-
 class Player;
 
 class Board {
@@ -19,9 +17,7 @@ public:
 	bool isFull() const;
 
 	void read();
-	void write();
-
-	std::string asString() const;
+	void write() const;
 private:
 	Player** board;
 	int width;
